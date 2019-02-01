@@ -1,0 +1,10 @@
+{
+  "name": "zhaoshou_admin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/bin9003/zhaoshou_admin.git",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
