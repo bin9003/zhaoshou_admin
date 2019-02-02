@@ -14,12 +14,19 @@ let sqlVul = {
 // })
 
 // msDB.sqlQuery('show tables like "students"', function (err, data) {
-//   console.log(data[0] === undefined) 
+//   console.log(data[0] === undefined)
 // })
 // msDB.sqlTableJudgeNull('student', function (data) {
 //   console.log(data)
 // })
 
-msDB.alter('student', {name: 'huahua', ages: 22, sex: 'nv'}, [['name', 'aa'], 'and', ['sex', '男'], 'or', ['content', '说明介绍了11']], function (err, res) {
-  console(err, res)
+// msDB.alter('student', {name: 'huahua', ages: 22, sex: 'nv'}, [['name', 'aa'], 'and', ['sex', '男'], 'or', ['content', '说明介绍了11']], function (err, res) {
+//   console(err, res)
+// })
+// msDB.delete('student', [['id', 4]], function (err, res) {
+//   console.log(err, res)
+// })
+
+msDB.Db.find('student', ['id', 'name'], ['limit ', '1,3'], function (err, res) {
+  console.log(err, res)
 })

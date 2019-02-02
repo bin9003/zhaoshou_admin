@@ -1,6 +1,6 @@
 var mysql      = require('mysql');
 var msSet = require('./mysqlSet')
-
+var mysqlDb = {}
 // 连接数据库
 function connect (collback) {
   var connection = mysql.createConnection(msSet.mysqlBase);
@@ -98,7 +98,7 @@ function objFallToString (obj) {
  * collback 回调函数
  * 
  */
-module.exports.add = (tableName, tableObj, collback) => {
+Db.add = (tableName, tableObj, collback) => {
   //
   sqlTableJudgeNull(tableName, (err, data) => {
     if (!data) {
@@ -156,7 +156,6 @@ function selectCondition (val) {
       return ''
     }
   }
-  console.log(c)
   return c
 }
 /**
@@ -164,16 +163,60 @@ function selectCondition (val) {
  * 如 ： update tableName set name='花花',age=21,sex='女' where id=2
  * tableName  表名           相当于 tableName
  * tableValue 要修改值      相当于 name='花花',age=21,sex='女'
- * condition  修改条件      相当于 id=2
+ * queryCondition  修改条件      相当于 id=2
  * collback   回调函数
  */
-module.exports.alter = (tableName, tableValue, findCondition, collback) => {
-  let sql = 'update ' + tableName + ' set '+ alterDataConcat(tableValue) +' where ' + selectCondition(findCondition)
+Db.alter = (tableName, tableValue, queryCondition, collback) => {
+  let sql = 'update ' + tableName + ' set '+ alterDataConcat(tableValue) +' where ' + selectCondition(queryCondition)
   sqlQuery(sql, collback)
 }
 
 
+/**
+ * 删除数据
+ * @param tableName  表名               相当于 tableName
+ * @param queryCondition  修改条件      相当于 id=2
+ * @param collback   回调函数
+ */
+Db.delete = function (tableName, queryCondition, collback) {
+  // delete from student where id=5;
+  let sql = 'delete from '.concat(tableName, ' where ', selectCondition(queryCondition))
+  console.log(sql)
+  sqlQuery(sql, function (err, res) {
+    collback(err, res)
+  })
+}
 
+/**
+ * 如：select id,name from student where date>'1988-1-2' and date<'1988-12-1';
+ * @param {string} tableName  表名         相当于 tableName
+ * @param {Array} findColumnsNames        相当于 id,name
+ * @param {Array} queryCondition  修改条件        相当于 date>'1988-1-2' and date<'1988-12-1';
+ * @param {Function} collback   回调函数
+ */
+Db.find = function (tableName, findColumnsNames, queryCondition, collback) {
+  let sql = 'select '.concat(findColumnsNames, ' from ', tableName), // sql 语句默认值
+  C
+  if (arguments.length == 3) {
+    collback = queryCondition
+  } else if (arguments.length > 4 || arguments.length < 3) {
+    collback('参数个数不对！', null)
+  }
+  if ( Array.isArray( queryCondition ) && queryCondition.length > 1 ) {
+    if ( queryCondition[0].trim() == 'limit' ) {
+      sql = 'select '.concat(findColumnsNames, ' from ', tableName, selectCondition(queryCondition))
+    }else {
+      sql = 'select '.concat(findColumnsNames, ' from ', tableName,' where ', selectCondition(queryCondition))
+    }
+    
+  }
+  // console.log(sql)
+  sqlQuery(sql, function (err, res) {
+    collback(err, res)
+  })
+}
+
+module.exports.Db = Db
 exports.sqlQuery = sqlQuery
 exports.sqlTableJudgeNull = sqlTableJudgeNull
 exports.sqlJudgeColumnName = sqlJudgeColumnName
